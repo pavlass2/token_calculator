@@ -1,0 +1,183 @@
+{
+    "openapi": "3.0.2",
+    "info": {
+        "title": "Token Calculator",
+        "description": "Token counting JSON API for Aaia based on tiktoken",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/calculate_token_amount": {
+            "post": {
+                "summary": "Calculate Token Amount",
+                "description": "Returns the number of tokens of the content",
+                "operationId": "calculate_token_amount_calculate_token_amount_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CalculateTokenAmountRequest"
+                            },
+                            "example": {
+                                "ai_model": "gpt-3.5-turbo-0301",
+                                "content": [
+                                    {
+                                        "role": "system",
+                                        "content": "You are helpful assistant."
+                                    },
+                                    {
+                                        "role": "user",
+                                        "content": "What is the capital of Czech Republic?"
+                                    },
+                                    {
+                                        "role": "assistant",
+                                        "content": "The capital of Czech Republic is Prague."
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CalculateTokenAmountResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "AiModel": {
+                "title": "AiModel",
+                "enum": [
+                    "gpt-3.5-turbo",
+                    "gpt-3.5-turbo-0301",
+                    "gpt-4",
+                    "gpt-4-0314"
+                ],
+                "type": "string",
+                "description": "An enumeration."
+            },
+            "CalculateTokenAmountRequest": {
+                "title": "CalculateTokenAmountRequest",
+                "required": [
+                    "ai_model",
+                    "content"
+                ],
+                "type": "object",
+                "properties": {
+                    "ai_model": {
+                        "$ref": "#/components/schemas/AiModel"
+                    },
+                    "content": {
+                        "title": "Content",
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "CalculateTokenAmountResponse": {
+                "title": "CalculateTokenAmountResponse",
+                "required": [
+                    "result",
+                    "messages",
+                    "amount"
+                ],
+                "type": "object",
+                "properties": {
+                    "result": {
+                        "$ref": "#/components/schemas/Result"
+                    },
+                    "messages": {
+                        "title": "Messages",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "amount": {
+                        "title": "Amount",
+                        "type": "integer"
+                    }
+                }
+            },
+            "HTTPValidationError": {
+                "title": "HTTPValidationError",
+                "type": "object",
+                "properties": {
+                    "detail": {
+                        "title": "Detail",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ValidationError"
+                        }
+                    }
+                }
+            },
+            "Result": {
+                "title": "Result",
+                "enum": [
+                    "OK",
+                    "INFO",
+                    "WARN",
+                    "ERROR"
+                ],
+                "type": "string",
+                "description": "An enumeration."
+            },
+            "ValidationError": {
+                "title": "ValidationError",
+                "required": [
+                    "loc",
+                    "msg",
+                    "type"
+                ],
+                "type": "object",
+                "properties": {
+                    "loc": {
+                        "title": "Location",
+                        "type": "array",
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ]
+                        }
+                    },
+                    "msg": {
+                        "title": "Message",
+                        "type": "string"
+                    },
+                    "type": {
+                        "title": "Error Type",
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}
